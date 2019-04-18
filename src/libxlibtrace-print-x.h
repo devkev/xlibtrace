@@ -2415,6 +2415,21 @@ void print_type_XConnectionWatchProc_(FILE *f, const char *funcname, const char 
 	dofflush(f);
 })
 
+// XGenericEventCookie
+#define __REALTYPE_XGenericEventCookie__    XGenericEventCookie
+#define __REALTYPE_XGenericEventCookie_p__  XGenericEventCookie *
+#define __REALTYPE_XGenericEventCookie_pp__ XGenericEventCookie **
+#define __TRACE_PRINT_TYPE_STRUCT_BODY_XGenericEventCookie__(safetype) \
+   __TRACE_PRINT_STRUCT_MEMBER__(f, safetype, *value, int, type) __PRINT_COMMA__(f) \
+   __TRACE_PRINT_STRUCT_MEMBER__(f, safetype, *value, unsigned_long, serial) __PRINT_COMMA__(f) \
+   __TRACE_PRINT_STRUCT_MEMBER__(f, safetype, *value, Bool, send_event) __PRINT_COMMA__(f) \
+   __TRACE_PRINT_STRUCT_MEMBER__(f, safetype, *value, Display_p, display) __PRINT_COMMA__(f) \
+   __TRACE_PRINT_STRUCT_MEMBER__(f, safetype, *value, int, extension) __PRINT_COMMA__(f) \
+   __TRACE_PRINT_STRUCT_MEMBER__(f, safetype, *value, int, evtype) __PRINT_COMMA__(f) \
+   __TRACE_PRINT_STRUCT_MEMBER__(f, safetype, *value, unsigned_int, cookie) __PRINT_COMMA__(f) \
+   __TRACE_PRINT_STRUCT_MEMBER__(f, safetype, *value, void_p, data)
+__INDIRECT_CALL_3__(__TRACE_PRINT_TYPE_STRUCT,__LIBXLIBTRACE_PRINT_X_SUFF__,__)(XGenericEventCookie)
+
 
 
 #undef __LIBXLIBTRACE_PRINT_X_BODY__
