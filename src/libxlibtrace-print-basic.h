@@ -200,7 +200,7 @@ void print_type_char_(FILE *f, const char *funcname, const char *argname, const 
 })
 
 #define __REALTYPE_char_p__ char *
-void print_type_char_p_(FILE *f, const char *funcname, const char *argname, const char *type, const char const * value) __LIBXLIBTRACE_PRINT_BASIC_BODY__({
+void print_type_char_p_(FILE *f, const char *funcname, const char *argname, const char *type, const char *value) __LIBXLIBTRACE_PRINT_BASIC_BODY__({
 	if (value) {
 		size_t len = strlen(value);
 		if (len > 30) {
