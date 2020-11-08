@@ -27,7 +27,7 @@ cat /usr/include/X11/Xlib.h \
 	-e 's/^#define Bool/\/\/&/' \
 	-e 's/^#define Status/\/\/&/' \
 	-e 's/_X_SENTINEL([0-9]*)//g' \
-| gcc -C -E - \
+| gcc -C -E -P - \
 | sed -e '/^[ 	]*$/d' \
 | sed -e 's/,[ 	][ 	]*\.\.\.$/,\n.../' \
 | awk '
