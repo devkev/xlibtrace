@@ -59,7 +59,7 @@ function _xlibtrace_makesafe(t) {
 	#	return "POINTER";
 	#} else {
 		safet = t;
-		safet = gensub("^const[ 	]+", "", "", safet);
+		safet = gensub("^const[ 	]+", "", 1, safet);
 		safet = gensub("[ 	]+", "_", "g", safet);
 		safet = gensub("[(),]", "_", "g", safet);
 		safet = gensub("\\[", "_", "g", safet);
@@ -89,9 +89,9 @@ function _xlibtrace_makedefn(t, n) {
 	if (t == "...") {
 		return sprintf("%s", t);
 	} else if (_xlibtrace_isfunctionpointer(t)) {
-		return gensub("^(.*\\(\\*)(\\).*)$", "\\1"n"\\2", "", t);
+		return gensub("^(.*\\(\\*)(\\).*)$", "\\1"n"\\2", 1, t);
 	} else if (_xlibtrace_isarray(t)) {
-		return gensub("^(.*)(\\[.*\\])$", "\\1"n"\\2", "", t);
+		return gensub("^(.*)(\\[.*\\])$", "\\1"n"\\2", 1, t);
 	} else {
 		return sprintf("%s %s", t, n);
 	}
@@ -136,8 +136,8 @@ BEGIN {
 
 {
 	if (/^extern [^(]*\($/) {
-		funcname = gensub("^extern (.*[^A-Za-z0-9_])([A-Za-z0-9_]*)\\($", "\\2", "");
-		type = gensub("^extern (.*[^A-Za-z0-9_])([A-Za-z0-9_]*)\\($", "\\1", "");
+		funcname = gensub("^extern (.*[^A-Za-z0-9_])([A-Za-z0-9_]*)\\($", "\\2", 1);
+		type = gensub("^extern (.*[^A-Za-z0-9_])([A-Za-z0-9_]*)\\($", "\\1", 1);
 		type = gensub("[ 	]+$", "", "g", type);
 		type = gensub("([^ *(])(\\*)", "\\1 \\2", "g", type);
 	} else if ((/^)[ 	]*;$/) && funcname) {
@@ -234,10 +234,10 @@ BEGIN {
 		type = "";
 		numargs = 0;
 	} else if (funcname) {
-		argtype[numargs] = gensub("^[ 	]*(.*)[ 	]*/\\*[ 	]*([A-Za-z0-9_]*)[ 	]*\\*/,?[ 	]*$", "\\1", "");
-		argname[numargs] = gensub("^[ 	]*(.*)[ 	]*/\\*[ 	]*([A-Za-z0-9_]*)[ 	]*\\*/,?[ 	]*$", "\\2", "");
-		argtype[numargs] = gensub("^[ 	]*", "", "", argtype[numargs]);
-		argtype[numargs] = gensub("[ 	]*$", "", "", argtype[numargs]);
+		argtype[numargs] = gensub("^[ 	]*(.*)[ 	]*/\\*[ 	]*([A-Za-z0-9_]*)[ 	]*\\*/,?[ 	]*$", "\\1", 1);
+		argname[numargs] = gensub("^[ 	]*(.*)[ 	]*/\\*[ 	]*([A-Za-z0-9_]*)[ 	]*\\*/,?[ 	]*$", "\\2", 1);
+		argtype[numargs] = gensub("^[ 	]*", "", 1, argtype[numargs]);
+		argtype[numargs] = gensub("[ 	]*$", "", 1, argtype[numargs]);
 		argtype[numargs] = gensub("([^ *(])(\\*)", "\\1 \\2", "g", argtype[numargs]);
 		numargs = numargs + 1;
 	}
