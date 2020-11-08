@@ -54,8 +54,8 @@ cat /usr/include/X11/Xlib.h \
 | awk \
 	-v function_parameter_overrides_file="libxlibtrace-functions-parameter-overrides" \
 '
-function makesafe(t) {
-	#if (ispointer(t)) {
+function _xlibtrace_makesafe(t) {
+	#if (_xlibtrace_ispointer(t)) {
 	#	return "POINTER";
 	#} else {
 		safet = t;
@@ -69,44 +69,44 @@ function makesafe(t) {
 	#}
 }
 
-function isfunctionpointer(t) {
+function _xlibtrace_isfunctionpointer(t) {
 	return (t ~ /\(\*\)/);
 }
 
-function ispointer(t) {
-	return isfunctionpointer(t) || (t ~ /\*$/);
+function _xlibtrace_ispointer(t) {
+	return _xlibtrace_isfunctionpointer(t) || (t ~ /\*$/);
 }
 
-function isconst(t) {
+function _xlibtrace_isconst(t) {
 	return (t ~ /^[cC][oO][nN][sS][tT][ 	]/);
 }
 
-function isarray2(t) {
+function _xlibtrace_isarray(t) {
 	return (t ~ /\[.*\]$/);
 }
 
-function makedefn(t, n) {
+function _xlibtrace_makedefn(t, n) {
 	if (t == "...") {
 		return sprintf("%s", t);
-	} else if (isfunctionpointer(t)) {
+	} else if (_xlibtrace_isfunctionpointer(t)) {
 		return gensub("^(.*\\(\\*)(\\).*)$", "\\1"n"\\2", "", t);
-	} else if (isarray2(t)) {
+	} else if (_xlibtrace_isarray(t)) {
 		return gensub("^(.*)(\\[.*\\])$", "\\1"n"\\2", "", t);
 	} else {
 		return sprintf("%s %s", t, n);
 	}
 }
 
-function makeprotoarglist() {
+function _xlibtrace_makeprotoarglist() {
 	s = "(";
 	for (i = 0; i < numargs; i++) {
-		s = s sprintf(" %s%s", makedefn(argtype[i], argname[i]), ((i<numargs-1)?",":""));
+		s = s sprintf(" %s%s", _xlibtrace_makedefn(argtype[i], argname[i]), ((i<numargs-1)?",":""));
 	}
 	s = s ")";
 	return s;
 }
 
-function makearglist() {
+function _xlibtrace_makearglist() {
 	s = "(";
 	for (i = 0; i < numargs; i++) {
 		s = s sprintf(" %s%s", argname[i], ((i<numargs-1)?",":""));
@@ -115,7 +115,7 @@ function makearglist() {
 	return s;
 }
 
-function makefixedargliststart() {
+function _xlibtrace_makefixedargliststart() {
 	s = "(";
 	for (i = 0; i < numargs - 1; i++) {
 		s = s sprintf(" %s%s", argname[i], ((i<numargs-2)?",":""));
@@ -123,7 +123,7 @@ function makefixedargliststart() {
 	return s;
 }
 
-function finalfixedargname() {
+function _xlibtrace_finalfixedargname() {
 	return argname[numargs-2];
 }
 
@@ -157,18 +157,18 @@ BEGIN {
 			}
 		}
 
-		saferettype = makesafe(type);
+		saferettype = _xlibtrace_makesafe(type);
 		if ((funcname,"") in override) {
 			saferettype = override[funcname,""];
 		}
 
 		#printf("#define __TRACE_RETTYPE_%s__ %s\n", funcname, type);
 		printf("#define __TRACE_SAFERETTYPE_%s__ %s\n", funcname, saferettype);
-		printf("#define __TRACE_PROTOARGLIST_%s__ %s\n", funcname, makeprotoarglist());
-		printf("#define __TRACE_ARGLIST_%s__ %s\n", funcname, makearglist());
+		printf("#define __TRACE_PROTOARGLIST_%s__ %s\n", funcname, _xlibtrace_makeprotoarglist());
+		printf("#define __TRACE_ARGLIST_%s__ %s\n", funcname, _xlibtrace_makearglist());
 		if (usesvarargs) {
-			printf("#define __TRACE_FIXEDARGLISTSTART_%s__ %s\n", funcname, makefixedargliststart());
-			printf("#define __TRACE_FINALFIXEDARGNAME_%s__ %s\n", funcname, finalfixedargname());
+			printf("#define __TRACE_FIXEDARGLISTSTART_%s__ %s\n", funcname, _xlibtrace_makefixedargliststart());
+			printf("#define __TRACE_FINALFIXEDARGNAME_%s__ %s\n", funcname, _xlibtrace_finalfixedargname());
 		}
 		printf("#define __TRACE_ADDITIONAL_LOCAL_VARS_%s__\n", funcname);
 		printf("#define __TRACE_ADDITIONAL_PRE_RUN_UNDERLYING_%s__\n", funcname);
@@ -179,7 +179,7 @@ BEGIN {
 		} else {
 			printf("#define __TRACE_PRINTF_BODY_%s__ \\\n", funcname);
 			for (i = 0; i < numargs; i++) {
-				if (ispointer(argtype[i]) && !isfunctionpointer(argtype[i]) && ! (argtype[i] ~ /void[ 	]+\*/) && !isconst(argtype[i])) {
+				if (_xlibtrace_ispointer(argtype[i]) && !_xlibtrace_isfunctionpointer(argtype[i]) && ! (argtype[i] ~ /void[ 	]+\*/) && !_xlibtrace_isconst(argtype[i])) {
 					printf("    always_reprint = 1; \\\n");
 					break;
 				}
@@ -188,7 +188,7 @@ BEGIN {
 				if (argtype[i] == "...") {
 					printf("    __TRACE_PRINTF_VARARG__()");
 				} else {
-					safeargtype = makesafe(argtype[i]);
+					safeargtype = _xlibtrace_makesafe(argtype[i]);
 					if ((funcname,argname[i]) in override) {
 						safeargtype = override[funcname,argname[i]];
 					}
@@ -214,7 +214,7 @@ BEGIN {
 			printf("#define __TRACE_RUN_UNDERLYING_EPILOGUE_%s__ \\\n", funcname);
 			for (i = 0; i < numargs; i++) {
 				if (argtype[i] ~ /^Display[ 	]+\*$/) {
-					printf("    __TRACE_RUN_XFLUSH_XSYNC__(%s, %s, %s)", funcname, makesafe(argtype[i]), argname[i]);
+					printf("    __TRACE_RUN_XFLUSH_XSYNC__(%s, %s, %s)", funcname, _xlibtrace_makesafe(argtype[i]), argname[i]);
 					has_display--;
 					if (has_display > 0) {
 						printf(" \\");
