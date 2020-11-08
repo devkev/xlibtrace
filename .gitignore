@@ -1,0 +1,17 @@
+Makefile
+.deps
+.libs
+*.la
+*.lo
+*.loT
+/autom4te.cache
+/config.h
+/config.log
+/config.status
+/libtool
+/stamp-h1
+/src/libxlibtrace-atoms.c
+/src/libxlibtrace-functions.h
+/src/libxlibtrace-print-keysyms-gen.h
+/src/libxlibtrace-varargs.h
+/src/xlibtrace
