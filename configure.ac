@@ -24,7 +24,7 @@
 
 
 AC_PREREQ(2.5)
-AC_INIT(xlibtrace, [0.1], [kev@pulo.com.au])
+AC_INIT(xlibtrace, [0.2], [kev@pulo.com.au])
 AC_CONFIG_SRCDIR([src/libxlibtrace.c])
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
